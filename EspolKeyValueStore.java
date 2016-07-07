@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package so_project;
+
 
 import java.net.*;
 import java.io.*;
@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EspolKeyValueStore
 {
@@ -53,15 +55,18 @@ class tpool implements Runnable{
 	}
 
 	public void run(){
-		BufferedReader reader = null;
+		//BufferedReader reader = null;
+                
+                ObjectInputStream reader = null;// = new ObjectInputStream(clientSocket.getInputStream())
 		PrintWriter writer = null;
 		try{
-			reader = new BufferedReader (new InputStreamReader (socket.getInputStream()));
+			reader = new ObjectInputStream (socket.getInputStream());
 			writer = new PrintWriter(socket.getOutputStream(),true);
 			while(true){
-				String line = reader.readLine();
-				String[] tokens = line.split(" ");
+				String[] tokens = (String[]) reader.readObject();
 				
+				                              
+                                
 			switch(tokens[0]){
 					
 					case "get":
@@ -93,7 +98,9 @@ class tpool implements Runnable{
 			}
 		}catch (IOException e){
 			throw new RuntimeException (e);
-		}finally{
+		} catch (ClassNotFoundException ex) {
+                Logger.getLogger(tpool.class.getName()).log(Level.SEVERE, null, ex);
+            }finally{
 			try{
 				if(reader != null){ reader.close();}
 				if(writer != null){ writer.close();}
@@ -101,6 +108,9 @@ class tpool implements Runnable{
 			}
 		}
 	}
+
+
+}
 
 
 class Mapa {
@@ -179,8 +189,4 @@ class Mapa {
         
         return listaDeKeys;
     }
-}
-
-
-
 }

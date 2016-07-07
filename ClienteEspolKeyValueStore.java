@@ -1,3 +1,5 @@
+
+
 import java.net.*;
 import java.io.*;
 import java.util.Arrays;
@@ -9,8 +11,11 @@ public class ClienteEspolKeyValueStore
 		/* args[0] corresponde a la ip del servidor (127.0.0.1 es una referencia a la misma maquina) */
 		/* args[1] es el puerto que escucha el servidor*/
 			Socket sock = new Socket(args[0],Integer.parseInt(args[1]));
-			PrintWriter out=null;
-			out=new PrintWriter(sock.getOutputStream(),true);
+                        //Socket sock = new Socket("127.0.0.1",6048);
+			//PrintWriter out=null;
+			//out=new PrintWriter(sock.getOutputStream(),true);
+                        ObjectOutputStream out;
+                        out = new ObjectOutputStream(sock.getOutputStream());
 			InputStream in = sock.getInputStream();
 			BufferedReader bin = new
 			BufferedReader(new InputStreamReader(in));
@@ -31,7 +36,7 @@ public class ClienteEspolKeyValueStore
 				switch (arr[0]) {
 					case "get":
 						if(arr.length==2){
-							out.println(line);
+							out.writeObject(arr);
 							System.out.println(bin.readLine());
 						}else{
 							System.out.println("ERROR: Numero invalido de parametros");
@@ -41,7 +46,7 @@ public class ClienteEspolKeyValueStore
 						if(arr.length==3){
 								if(!(arr[2].contains("\\n")) && !(arr[1].contains("\\t")) && !(arr[1].contains("\\n")) && !(arr[1].contains(" "))){
 									if(arr[1].getBytes("UTF-8").length<=128e6 && arr[2].getBytes("UTF-8").length<=2e9){
-										out.println(line);
+										out.writeObject(arr);
 										System.out.println(bin.readLine());
 								}else{
 										System.out.println("ERROR: \"key\" no puede exceder los 128MB y \"value\" no puede exceder los 2GB ");
@@ -55,7 +60,7 @@ public class ClienteEspolKeyValueStore
                      break;
 					case "del":
 						if(arr.length==2){
-							out.println(line);
+							out.writeObject(arr);
 							System.out.println(bin.readLine());
 						}else{
 							System.out.println("ERROR: Numero invalido de parametros");
@@ -63,9 +68,9 @@ public class ClienteEspolKeyValueStore
                      break;
 					case "list":
 						if(arr.length==1){
-							out.println(line);
-							i_line = bin.readLine();
-							i_line = i_line.trim().replaceAll(" ","\\n");
+							out.writeObject(arr);
+							String i_line = bin.readLine();
+							i_line = i_line.trim().replaceAll(" ","\n");
 							System.out.println(i_line);
 						}else{
 							System.out.println("ERROR: Numero invalido de parametros");
