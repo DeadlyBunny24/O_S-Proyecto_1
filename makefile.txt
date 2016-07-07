@@ -1,0 +1,5 @@
+all: EspolKeyValueStore.class ClienteEspolKeyValueStore.class
+EspolKeyValueStore.class: EspolKeyValueStore.java 
+	javac EspolKeyValueStore.java
+ClienteEspolKeyValueStore.class: ClienteEspolKeyValueStore.java
+	javac ClienteEspolKeyValueStore.java
